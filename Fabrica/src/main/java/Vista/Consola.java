@@ -24,6 +24,11 @@ public class Consola {
 		return new ModelAndView("registro");
 	}
 	
+	@GetMapping("/IniciarSesion")
+	public ModelAndView InciarSesion() {
+		return new ModelAndView("IniciarSesion");
+	}
+	
 	@PostMapping("/registro")
 	public ModelAndView registrarse(@RequestParam String Usuario, @RequestParam String Contraseña) {
 		
@@ -32,11 +37,13 @@ public class Consola {
 		File Archivo = new File(ruta);
 		
 		if(Archivo.exists()) {
+			
 			//si existe devuelve mensaje de "Ya existe"
-			ModelAndView modelAndView = new ModelAndView("register_error"); 
+			ModelAndView modelAndView = new ModelAndView("registro"); 
             modelAndView.addObject("mensaje", "El nombre de usuario ya existe, por favor elige otro.");
             return modelAndView;
 		}
+		
 		//revision del archivo, guarda el usuario y la contraseña en el archivo
 		try(FileWriter fw = new FileWriter(Archivo, false); PrintWriter pw = new PrintWriter(fw)){
 			
