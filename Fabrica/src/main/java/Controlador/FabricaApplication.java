@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import Vista.Consola;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "")
 public class FabricaApplication {
 
 	public static void main(String[] args) {
