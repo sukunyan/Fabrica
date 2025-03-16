@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
-import Vista.Consola;
+import Vista.Login;
 
 @SpringBootApplication(scanBasePackages = "Vista")
 @ComponentScan(basePackages = "Vista")
@@ -13,9 +13,9 @@ public class FabricaApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(FabricaApplication.class, args);
 		
-		Consola consola = new Consola();
+		Login login = new Login();
 		
-		consola.abrirNavegador("http://localhost:8080/");
+		login.abrirNavegador("http://localhost:8080/login");
 		
 	}
 
