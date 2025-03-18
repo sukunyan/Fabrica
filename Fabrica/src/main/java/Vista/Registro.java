@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,7 +56,7 @@ public class Registro {
 			pw.println(sql.getCorreo());
 			
 		}catch(IOException e) {
-			return new ModelAndView("Error");
+			return new ModelAndView("404");
 		}
 		
 		ModelAndView modelo = new ModelAndView("/login");

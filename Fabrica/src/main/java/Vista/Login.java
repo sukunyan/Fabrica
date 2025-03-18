@@ -11,11 +11,8 @@ import Modelo.SQL;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 
 @Controller
@@ -30,6 +27,7 @@ public class Login {
 	}
 	
 	public void abrirNavegador(String url) {
+		
 		 try {
 		        String os = System.getProperty("os.name").toLowerCase();
 		        ProcessBuilder processBuilder;
@@ -51,6 +49,7 @@ public class Login {
 		    } catch (IOException e) {
 		        e.printStackTrace();
 		    }
+		 
     }
 	
 	@PostMapping
