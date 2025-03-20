@@ -6,7 +6,7 @@ public class SQL {
 	
 	private String Usuario;
 	private String Correo;
-	private String Contraseña;
+	private String Contrasenia;
 	private ArrayList<SQL> user = new ArrayList<>();
 	
 	/**
@@ -14,17 +14,17 @@ public class SQL {
 	 * @param correo
 	 * @param contraseña
 	 */
-	public SQL(String usuario, String correo, String contraseña, ArrayList<SQL> user) {
+	public SQL(String usuario, String correo, String contrasenia, ArrayList<SQL> user) {
 		this.Usuario = usuario;
 		this.Correo = correo;
-		this.Contraseña = contraseña;
+		this.Contrasenia = contrasenia;
 		this.user = user;
 	}
 	
 	public SQL() {
 		this.Usuario = "";
 		this.Correo = "";
-		this.Contraseña = "";
+		this.Contrasenia = "";
 		this.user = new ArrayList<>();
 	}
 
@@ -59,15 +59,15 @@ public class SQL {
 	/**
 	 * @return the contraseña
 	 */
-	public String getContraseña() {
-		return Contraseña;
+	public String getContrasenia() {
+		return Contrasenia;
 	}
 	
 	/**
 	 * @param contraseña the contraseña to set
 	 */
-	public void setContraseña(String contraseña) {
-		Contraseña = contraseña;
+	public void setContrasenia(String contrasenia) {
+		Contrasenia = contrasenia;
 	}
 
 	/**

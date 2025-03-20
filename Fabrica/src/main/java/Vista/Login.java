@@ -53,18 +53,19 @@ public class Login {
     }
 	
 	@PostMapping
-	private ModelAndView InciarSesion(@RequestParam String Usuario, @RequestParam String Contraseña) {
+	private ModelAndView InciarSesion(@RequestParam String Usuario, @RequestParam String Contrasenia) {
 		
 		String lector = "usuarios/";
 		File carpeta = new File(lector);
 		File[] archivos = carpeta.listFiles();
 		String usuario = "";
-		String contraseña = "";
+		String contrasenia = "";
 		String correo = "";
 		
 		for(File archivo : archivos) {
 			
 			if(archivo.isFile() && archivo.getName().equals(Usuario + ".txt")){
+				
 				try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
 					
                     String linea;
@@ -75,9 +76,9 @@ public class Login {
                         	
                             usuario = linea.trim(); // Primera línea: Usuario
                             
-                        } else if (contraseña.isEmpty()) {
+                        } else if (contrasenia.isEmpty()) {
                         	
-                            contraseña = linea.trim(); // Segunda línea: Contraseña
+                            contrasenia = linea.trim(); // Segunda línea: Contraseña
                             
                         } else if (correo.isEmpty()) {
                         	
@@ -86,11 +87,11 @@ public class Login {
                         }
                     }
                     
-                    if (Usuario.equals(usuario) && Contraseña.equals(contraseña)) {
+                    if (Usuario.equals(usuario) && Contrasenia.equals(contrasenia)) {
                             	
                                 System.out.println("Inicio de sesión exitoso para: " + Usuario);
                                 sql.setUsuario(usuario);
-                                sql.setContraseña(contraseña);
+                                sql.setContrasenia(contrasenia);
                                 sql.setCorreo(correo);
                                 sql.setUser(sql);
                                 return new ModelAndView("/panel");
