@@ -1,11 +1,17 @@
 package Vista;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.http.HttpStatus;
+
+import org.springframework.web.bind.annotation.ResponseBody;
+import java.util.HashMap;
+import java.util.Map;
 
 import Modelo.SQL;
 
@@ -51,61 +57,49 @@ public class Login {
 		    }
 		 
     }
-	
 	@PostMapping
-	private ModelAndView InciarSesion(@RequestParam String Usuario, @RequestParam String Contrasenia) {
-		
-		String lector = "usuarios/";
-		File carpeta = new File(lector);
-		File[] archivos = carpeta.listFiles();
-		String usuario = "";
-		String contrasenia = "";
-		String correo = "";
-		
-		for(File archivo : archivos) {
-			
-			if(archivo.isFile() && archivo.getName().equals(Usuario + ".txt")){
-				
-				try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
-					
-                    String linea;
-                    
-                    while ((linea = br.readLine()) != null) {
-                    	
-                        if (usuario.isEmpty()) {
-                        	
-                            usuario = linea.trim(); // Primera línea: Usuario
-                            
-                        } else if (contrasenia.isEmpty()) {
-                        	
-                            contrasenia = linea.trim(); // Segunda línea: Contraseña
-                            
-                        } else if (correo.isEmpty()) {
-                        	
-                            correo = linea.trim(); // Tercera línea: Correo
-                            
-                        }
-                    }
-                    
-                    if (Usuario.equals(usuario) && Contrasenia.equals(contrasenia)) {
-                            	
-                                System.out.println("Inicio de sesión exitoso para: " + Usuario);
-                                sql.setUsuario(usuario);
-                                sql.setContrasenia(contrasenia);
-                                sql.setCorreo(correo);
-                                sql.setUser(sql);
-                                return new ModelAndView("/panel");
-                                
-                    }
-                    
-                } catch (IOException e) {
-                    System.out.println("Error al leer el archivo: " + e.getMessage());
-                }
-			}
-				
-		}
-		
-		return new ModelAndView("/login");
+	@ResponseBody
+	public ResponseEntity<Map<String, String>> iniciarSesion(@RequestParam String Usuario, @RequestParam String Contrasenia) {
+	    String lector = "usuarios/";
+	    File carpeta = new File(lector);
+	    File[] archivos = carpeta.listFiles();
+	    String usuario = "", contrasenia = "", correo = "";
+
+	    Map<String, String> response = new HashMap<>();
+
+	    if (archivos == null) {
+	        response.put("error", "No se encontraron archivos de usuarios");
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	    }
+
+	    for (File archivo : archivos) {
+	        if (archivo.isFile() && archivo.getName().equals(Usuario + ".txt")) {
+	            try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+	                String linea;
+	                while ((linea = br.readLine()) != null) {
+	                    if (usuario.isEmpty()) usuario = linea.trim();
+	                    else if (contrasenia.isEmpty()) contrasenia = linea.trim();
+	                    else if (correo.isEmpty()) correo = linea.trim();
+	                }
+
+	                if (Usuario.equals(usuario) && Contrasenia.equals(contrasenia)) {
+	                    sql.setUsuario(usuario);
+	                    sql.setContrasenia(contrasenia);
+	                    sql.setCorreo(correo);
+	                    sql.setUser(sql);
+
+	                    response.put("mensaje", "Inicio de sesión exitoso");
+	                    return ResponseEntity.ok(response);
+	                }
+	            } catch (IOException e) {
+	                response.put("error", "Error al leer el archivo");
+	                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	            }
+	        }
+	    }
+
+	    response.put("error", "Usuario o contraseña incorrectos. Intenta de nuevo.");
+	    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 	}
 	
 }
