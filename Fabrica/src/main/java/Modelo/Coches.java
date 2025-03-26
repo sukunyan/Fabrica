@@ -4,23 +4,25 @@ import java.time.LocalDate;
 
 public class Coches {
 	
+	private int cod;
 	private String marca;
 	private String modelo;
-	private LocalDate fecha;
+	private String fecha;
 	private String matricula;
-	private int numChasis;
+	private String numChasis;
 	
 	public Coches(){
+		this.cod = 0;
 		this.marca = "";
 		this.modelo = "";
-		this.fecha = null;
+		this.fecha = "";
 		this.matricula = "";
-		this.numChasis = 0;
+		this.numChasis = "";
 	}
 
 
-	public Coches(String marca, String modelo, LocalDate fecha, String matricula, int numChasis) {
-		super();
+	public Coches(int cod, String marca, String modelo, String fecha, String matricula, String numChasis) {
+		this.cod = cod;
 		this.marca = marca;
 		this.modelo = modelo;
 		this.fecha = fecha;
@@ -64,7 +66,7 @@ public class Coches {
 	/**
 	 * @return the fecha
 	 */
-	public LocalDate getFecha() {
+	public String getFecha() {
 		return fecha;
 	}
 
@@ -72,7 +74,7 @@ public class Coches {
 	/**
 	 * @param fecha the fecha to set
 	 */
-	public void setFecha(LocalDate fecha) {
+	public void setFecha(String fecha) {
 		this.fecha = fecha;
 	}
 
@@ -96,7 +98,7 @@ public class Coches {
 	/**
 	 * @return the numChasis
 	 */
-	public int getNumChasis() {
+	public String getNumChasis() {
 		return numChasis;
 	}
 
@@ -104,8 +106,24 @@ public class Coches {
 	/**
 	 * @param numChasis the numChasis to set
 	 */
-	public void setNumChasis(int numChasis) {
+	public void setNumChasis(String numChasis) {
 		this.numChasis = numChasis;
+	}
+
+
+	/**
+	 * @return the cod
+	 */
+	public int getCod() {
+		return cod;
+	}
+
+
+	/**
+	 * @param cod the cod to set
+	 */
+	public void setCod(int cod) {
+		this.cod = cod;
 	}
 	
 	

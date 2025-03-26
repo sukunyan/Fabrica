@@ -31,20 +31,10 @@ public class Insertar {
 		
 		coches.setMarca(marca);
 		coches.setModelo(modelo);
-		coches.setFecha(anio);
+		String fecha = anio.toString();
+		coches.setFecha(fecha);
 		coches.setMatricula(matricula);
-		
-		try {
-			
-			int probador = Integer.parseInt(numChasis);
-			coches.setNumChasis(probador);
-			
-		} catch(Exception e) {
-			
-			System.out.println(e);
-			return new ModelAndView("/insertar").addObject(e);
-			
-		}
+		coches.setNumChasis(numChasis);
 		
 		
 		
@@ -52,9 +42,9 @@ public class Insertar {
 			Connection conexion = DriverManager.getConnection("jdbc:mysql://127.0.0.1/Coches", "root", "");
 			
 			Statement consulta = conexion.createStatement();
-			consulta.executeUpdate("insert into coches(marca, modelo, anio, matricula, numChasis)" + " values('" + coches.getMarca() + "', '" + coches.getModelo() + "', '" + coches.getFecha() + "', " + "'" + coches.getMatricula() + "', " + coches.getNumChasis() + ");");
+			consulta.executeUpdate("insert into coches(marca, modelo, anio, matricula, numChasis)" + " values('" + coches.getMarca() + "', '" + coches.getModelo() + "', '" + coches.getFecha() + "', " + "'" + coches.getMatricula() + "', '" + coches.getNumChasis() + "');");
 			
-			System.out.println("insert into coches(marca, modelo, anio, matricula, numChasis)" + " values('" + coches.getMarca() + "', '" + coches.getModelo() + "', '" + coches.getFecha() + "', " + "'" + coches.getMatricula() + "', " + coches.getNumChasis() + ");");
+			System.out.println("insert into coches(marca, modelo, anio, matricula, numChasis)" + " values('" + coches.getMarca() + "', '" + coches.getModelo() + "', '" + coches.getFecha() + "', " + "'" + coches.getMatricula() + "', '" + coches.getNumChasis() + "');");
 			
 			conexion.close();
 			
