@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     <td class="modelo">${coche.modelo}</td>
                     <td class="fecha">${coche.fecha}</td>
                     <td class="matricula">${coche.matricula}</td>
-                    <td class="chasis">${coche.numChasis}</td> <!-- Cambié 'numChasis' por 'chasis' -->
+                    <td class="chasis">${coche.numChasis}</td>
                     <td>
                         <div class="botones-container">
                             <button class="btn-modificar"><i class="fas fa-edit"></i> Modificar</button>
@@ -30,51 +30,85 @@ document.addEventListener("DOMContentLoaded", function() {
                 `;
                 tablaCoches.appendChild(fila);
 
+                // Funcionalidad del botón de "Eliminar"
+                fila.querySelector(".btn-eliminar").addEventListener("click", function() {
+                    const confirmar = confirm("¿Estás seguro de que deseas eliminar este coche?");
+                    if (confirmar) {
+                        // Obtener todos los datos de la fila
+                        const codCoche = fila.querySelector(".cod").textContent;
+                        const marca = fila.querySelector(".marca").textContent;
+                        const modelo = fila.querySelector(".modelo").textContent;
+                        const fecha = fila.querySelector(".fecha").textContent;
+                        const matricula = fila.querySelector(".matricula").textContent;
+                        const chasis = fila.querySelector(".chasis").textContent;
+
+                        // Crear un objeto con todos los datos del coche
+                        const cocheData = {
+                            cod: codCoche,
+                            marca: marca,
+                            modelo: modelo,
+                            fecha: fecha,
+                            matricula: matricula,
+                            numChasis: chasis
+                        };
+
+                        // Enviar los datos del coche al backend para eliminarlo
+                        fetch("/gestionar/eliminar", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(cocheData)  // Enviamos todos los datos del coche
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Error en la respuesta del servidor');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                // Si la eliminación es exitosa, eliminamos la fila de la tabla
+                                tablaCoches.removeChild(fila);
+                            } else {
+                                throw new Error(data.message || "Error al eliminar el coche");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error al eliminar:", error);
+                            alert("No se pudo eliminar el coche. Inténtelo de nuevo.");
+                        });
+                    }
+                });
+
                 // Añadir la funcionalidad de "Modificar"
-                fila.querySelector(".btn-modificar").addEventListener("click", function() {
-                    // Obtener las celdas de la fila
-                    const celdas = fila.querySelectorAll("td:not(:first-child):not(:last-child)"); // Excluye "cod" y la columna de acciones
+                const btnModificar = fila.querySelector(".btn-modificar");
+                let estadoEdicion = false;
 
-                    // Si ya estamos en modo edición, no hacer nada
-                    if (fila.classList.contains("editando")) return;
-
-                    // Agregar clase de edición para evitar modificaciones repetidas
-                    fila.classList.add("editando");
-
-                    // Convertir las celdas en inputs para la edición
-                    celdas.forEach(celda => {
-                        const valor = celda.textContent;
-                        celda.innerHTML = `<input type="text" value="${valor}">`;
-                    });
-
-                    // Cambiar el texto y funcionalidad del botón de "Modificar"
-                    const btnModificar = fila.querySelector(".btn-modificar");
-                    btnModificar.innerHTML = '<i class="fas fa-save"></i> Guardar';
-                    btnModificar.classList.remove("btn-modificar");
-                    btnModificar.classList.add("btn-guardar");
-
-                    // Cuando se hace clic en "Guardar"
-                    btnModificar.addEventListener("click", function() {
+                btnModificar.addEventListener("click", function() {
+                    // Si ya está en modo edición
+                    if (estadoEdicion) {
                         // Obtener los valores de los inputs
-                        const nuevosValores = Array.from(fila.querySelectorAll("td input")).map(input => input.value);
+                        const inputs = fila.querySelectorAll("td input");
+                        const nuevosValores = Array.from(inputs).map(input => input.value.trim());
 
-                        // Validación de campos vacíos
-                        if (nuevosValores.some(valor => valor.trim() === "")) {
+                        // Validar que los campos no estén vacíos
+                        if (nuevosValores.some(valor => valor === "")) {
                             alert("Todos los campos deben estar completos.");
                             return;
                         }
 
-                        // Crear un objeto con los nuevos valores
+                        // Preparar datos para enviar al backend
                         const datosModificados = {
-                            cod: fila.querySelector(".cod").textContent, // El cod no debe cambiar
+                            cod: fila.querySelector(".cod").textContent,
                             marca: nuevosValores[0],
                             modelo: nuevosValores[1],
                             fecha: nuevosValores[2],
                             matricula: nuevosValores[3],
-                            numChasis: nuevosValores[4]  // Cambié numChasis por chasis
+                            numChasis: nuevosValores[4]
                         };
 
-                        // Enviar los datos actualizados al backend
+                        // Enviar datos al backend
                         fetch("/gestionar/actualizar", {
                             method: "POST",
                             headers: {
@@ -82,32 +116,63 @@ document.addEventListener("DOMContentLoaded", function() {
                             },
                             body: JSON.stringify(datosModificados)
                         })
-                        .then(response => response.json())
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Error en la respuesta del servidor');
+                            }
+                            return response.json();
+                        })
                         .then(data => {
                             if (data.success) {
-                                // Actualizar la tabla con los nuevos valores
+                                // Actualizar celdas con nuevos valores
+                                const celdas = fila.querySelectorAll("td:not(:first-child):not(:last-child)");
                                 celdas.forEach((celda, index) => {
                                     celda.innerHTML = nuevosValores[index];
                                 });
 
-                                // Cambiar el botón de "Guardar" de vuelta a "Modificar"
+                                // Restaurar estado de edición
                                 btnModificar.innerHTML = '<i class="fas fa-edit"></i> Modificar';
-                                btnModificar.classList.remove("btn-guardar");
-                                btnModificar.classList.add("btn-modificar");
-
-                                // Eliminar la clase de edición
-                                fila.classList.remove("editando");
+                                estadoEdicion = false;
                             } else {
-                                console.error("Error al actualizar los datos:", data);
-                                alert("Error al actualizar los datos.");
+                                throw new Error(data.message || "Error al actualizar los datos");
                             }
                         })
                         .catch(error => {
-                            console.error("Error al enviar los datos:", error);
-                            alert("Error al enviar los datos.");
+                            console.error("Error al guardar:", error);
+                            alert("No se pudo guardar el registro. Inténtelo de nuevo.");
                         });
-                    });
+                    } else {
+                        // Salir de cualquier otra fila en edición
+                        document.querySelectorAll(".botones-container .btn-modificar").forEach(boton => {
+                            // Si el botón no es el actual, restauramos el estado
+                            if (boton !== btnModificar) {
+                                const filaEnEdicion = boton.closest("tr");
+                                const celdas = filaEnEdicion.querySelectorAll("td:not(:first-child):not(:last-child)");
+                                celdas.forEach(celda => {
+                                    // Restauramos los valores originales
+                                    const valorOriginal = celda.querySelector("input")?.getAttribute("data-original-value");
+                                    celda.innerHTML = valorOriginal || celda.textContent;
+                                });
+
+                                // Restauramos el botón de "Modificar"
+                                boton.innerHTML = '<i class="fas fa-edit"></i> Modificar';
+                            }
+                        });
+
+                        // Entrar en modo edición
+                        btnModificar.innerHTML = '<i class="fas fa-save"></i> Guardar';
+                        
+                        // Convertir celdas a inputs
+                        const celdas = fila.querySelectorAll("td:not(:first-child):not(:last-child)");
+                        celdas.forEach(celda => {
+                            const valor = celda.textContent;
+                            celda.innerHTML = `<input type="text" value="${valor}" data-original-value="${valor}">`;
+                        });
+
+                        estadoEdicion = true;
+                    }
                 });
+
             });
 
             // Filtrar coches mientras se escribe

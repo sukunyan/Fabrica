@@ -1,31 +1,32 @@
 package Modelo;
 
-import java.util.ArrayList;
-
 public class SQL {
 	
+	private int Cod;
 	private String Usuario;
 	private String Correo;
 	private String Contrasenia;
-	private ArrayList<SQL> user = new ArrayList<>();
+	private int Admin;
 	
 	/**
 	 * @param usuario
 	 * @param correo
 	 * @param contraseña
 	 */
-	public SQL(String usuario, String correo, String contrasenia, ArrayList<SQL> user) {
+	public SQL(int cod, String usuario, String correo, String contrasenia, int admin) {
+		this.Cod = cod;
 		this.Usuario = usuario;
 		this.Correo = correo;
 		this.Contrasenia = contrasenia;
-		this.user = user;
+		this.Admin = admin;
 	}
 	
 	public SQL() {
+		this.Cod = 0;
 		this.Usuario = "";
 		this.Correo = "";
 		this.Contrasenia = "";
-		this.user = new ArrayList<>();
+		this.Admin = 0;
 	}
 
 	/**
@@ -71,17 +72,33 @@ public class SQL {
 	}
 
 	/**
-	 * @return the user
+	 * @return the admin
 	 */
-	public ArrayList<SQL> getUser() {
-		return user;
+	public int getAdmin() {
+		return Admin;
 	}
 
 	/**
-	 * @param user the user to set
+	 * @param admin the admin to set
 	 */
-	public void setUser(SQL User) {
-		this.user.add(User);
+	public void setAdmin(int admin) {
+		Admin = admin;
 	}
+
+	/**
+	 * @return the cod
+	 */
+	public int getCod() {
+		return Cod;
+	}
+
+	/**
+	 * @param cod the cod to set
+	 */
+	public void setCod(int cod) {
+		Cod = cod;
+	}
+
+	
 	
 }

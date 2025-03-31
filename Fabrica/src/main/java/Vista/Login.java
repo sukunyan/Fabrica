@@ -7,18 +7,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
 import org.springframework.http.HttpStatus;
 
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import Modelo.SQL;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 
 @Controller
@@ -26,6 +31,7 @@ import java.io.IOException;
 public class Login {
 	
 	SQL sql = new SQL();
+	ArrayList<SQL> User = new ArrayList<>();
 	
 	@GetMapping
 	private ModelAndView Principal() {
@@ -64,7 +70,9 @@ public class Login {
 	    String lector = "usuarios/";
 	    File carpeta = new File(lector);
 	    File[] archivos = carpeta.listFiles();
+	    int cod = 0;
 	    String usuario = "", contrasenia = "", correo = "";
+	    int admin = 0;
 
 	    Map<String, String> response = new HashMap<>();
 
@@ -72,35 +80,58 @@ public class Login {
 	        response.put("error", "No se encontraron archivos de usuarios");
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	    }
+	    
+		try {
+			
+			Connection conexion = DriverManager.getConnection("jdbc:mysql://127.0.0.1/fabrica", "root", "");
+			
+			Statement consulta = conexion.createStatement();
+			
+					
+			ResultSet revisar = consulta.executeQuery("select cod, usuario, contrasenia, correo, admin from usuarios;");
+			
+			
+			while(revisar.next()){
+				
+				System.out.println("==========================================================");
+				System.out.println("Cod: " + revisar.getString("cod"));
+				System.out.println("Marca: " + revisar.getString("usuario"));
+				System.out.println("Modelo: " + revisar.getString("contrasenia"));
+				System.out.println("Anio: " + revisar.getString("correo"));
+				System.out.println("Matricula: " + revisar.getString("admin"));
+				System.out.println("==========================================================");
+				
+				cod = revisar.getInt("cod");
+				usuario = revisar.getString("usuario");
+				contrasenia = revisar.getString("contrasenia");
+				correo = revisar.getString("correo");
+				admin = revisar.getInt("admin");
+				
+				
+				SQL user = new SQL(cod, usuario, contrasenia, correo, admin);
+				
+				User.add(user);
+				
+				if(Usuario.equals(usuario) && Contrasenia.equals(contrasenia)) {
+					response.put("mensaje", "Inicio de sesion exitoso");
+					return ResponseEntity.ok(response);
+				}
+				
+			}
+					
+			
+			
+				
+			conexion.close();
 
-	    for (File archivo : archivos) {
-	        if (archivo.isFile() && archivo.getName().equals(Usuario + ".txt")) {
-	            try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
-	                String linea;
-	                while ((linea = br.readLine()) != null) {
-	                    if (usuario.isEmpty()) usuario = linea.trim();
-	                    else if (contrasenia.isEmpty()) contrasenia = linea.trim();
-	                    else if (correo.isEmpty()) correo = linea.trim();
-	                }
-
-	                if (Usuario.equals(usuario) && Contrasenia.equals(contrasenia)) {
-	                    sql.setUsuario(usuario);
-	                    sql.setContrasenia(contrasenia);
-	                    sql.setCorreo(correo);
-	                    sql.setUser(sql);
-
-	                    response.put("mensaje", "Inicio de sesión exitoso");
-	                    return ResponseEntity.ok(response);
-	                }
-	            } catch (IOException e) {
-	                response.put("error", "Error al leer el archivo");
-	                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-	            }
-	        }
-	    }
-
-	    response.put("error", "Usuario o contraseña incorrectos. Intenta de nuevo.");
-	    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+	 
+        } catch (Exception e) {
+            response.put("error", "Error al leer el archivo");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+	        response.put("error", "Usuario o contraseña incorrectos. Intenta de nuevo.");
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 	}
+
 	
 }

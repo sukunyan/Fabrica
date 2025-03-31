@@ -39,9 +39,11 @@ public class Insertar {
 		
 		
 		try {
-			Connection conexion = DriverManager.getConnection("jdbc:mysql://127.0.0.1/Coches", "root", "");
+			
+			Connection conexion = DriverManager.getConnection("jdbc:mysql://127.0.0.1/fabrica", "root", "");
 			
 			Statement consulta = conexion.createStatement();
+			
 			consulta.executeUpdate("insert into coches(marca, modelo, anio, matricula, numChasis)" + " values('" + coches.getMarca() + "', '" + coches.getModelo() + "', '" + coches.getFecha() + "', " + "'" + coches.getMatricula() + "', '" + coches.getNumChasis() + "');");
 			
 			System.out.println("insert into coches(marca, modelo, anio, matricula, numChasis)" + " values('" + coches.getMarca() + "', '" + coches.getModelo() + "', '" + coches.getFecha() + "', " + "'" + coches.getMatricula() + "', '" + coches.getNumChasis() + "');");

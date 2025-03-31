@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -26,7 +27,6 @@ import Modelo.Coches;
 public class GestionarConsultas {
 
 	ArrayList<Coches> coches = new ArrayList<>();
-	
 	@GetMapping
 	public ModelAndView Gestionador() {
 		return new ModelAndView("/gestionar");
@@ -41,7 +41,7 @@ public class GestionarConsultas {
 		coches.clear();  
 		
 		try {
-			Connection conexion = DriverManager.getConnection("jdbc:mysql://127.0.0.1/coches", "root", "");
+			Connection conexion = DriverManager.getConnection("jdbc:mysql://127.0.0.1/fabrica", "root", "");
 			
 			Statement consulta = conexion.createStatement();
 			
@@ -101,7 +101,7 @@ public class GestionarConsultas {
 			
             Coches cocheModificado = coche;
             
-			Connection conexion = DriverManager.getConnection("jdbc:mysql://127.0.0.1/coches", "root", "");
+			Connection conexion = DriverManager.getConnection("jdbc:mysql://127.0.0.1/fabrica", "root", "");
 			
 			Statement consulta = conexion.createStatement();
 			
@@ -139,11 +139,46 @@ public class GestionarConsultas {
 			System.out.println(e);
 			return "{\"fail\":\"false\"}";
 			
-		}
-		
-		
+		}	
 		
 	}
 	
+	@PostMapping("/eliminar")
+	@ResponseBody
+	private String eliminar(@RequestBody Coches coche) {
+		
+		 Coches Coche = coche;
+		
+		
+		try {
+			
+			Connection conexion = DriverManager.getConnection("jdbc:mysql://127.0.0.1/fabrica", "root", "");
+			
+			Statement consulta = conexion.createStatement();
+			
+			consulta.executeUpdate("insert into eliminados(marca, modelo, anio, matricula, numChasis)" + " values('" + Coche.getMarca() + "', '" + Coche.getModelo() + "', '" + Coche.getFecha() + "', " + "'" + Coche.getMatricula() + "', '" + Coche.getNumChasis() + "');");
+			
+			System.out.println("insert into eliminados(marca, modelo, anio, matricula, numChasis)" + " values('" + Coche.getMarca() + "', '" + Coche.getModelo() + "', '" + Coche.getFecha() + "', " + "'" + Coche.getMatricula() + "', '" + Coche.getNumChasis() + "');");
+			
+			int valor = consulta.executeUpdate("delete from coches where cod=" + Coche.getCod());
+			
+			if(valor==1) {
+				System.out.println("Coche borrado correctamente");
+				consulta.executeUpdate("ALTER TABLE coches AUTO_INCREMENT = 0");
+			}else {
+				System.out.println("Ha habido un problema en el borrado del Coche");
+			}
+			
+			conexion.close();
+			
+			return "{\"success\":\"true\"}";
+			
+		} catch (Exception e) {
+			
+			System.out.println(e);
+			return "{\"fail\":\"false\"}";
+			
+		}
+	}
 	
 }
